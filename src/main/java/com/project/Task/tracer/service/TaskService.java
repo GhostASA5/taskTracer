@@ -1,18 +1,20 @@
 package com.project.Task.tracer.service;
 
-import com.project.Task.tracer.dto.task.TaskRequest;
-import com.project.Task.tracer.dto.task.TaskResponse;
-import com.project.Task.tracer.dto.task.UpdateTaskByUser;
+import com.project.Task.tracer.dto.task.*;
 import com.project.Task.tracer.exception.TaskNotFoundException;
 import com.project.Task.tracer.mapper.TaskMapper;
 import com.project.Task.tracer.model.task.Task;
 import com.project.Task.tracer.model.user.User;
 import com.project.Task.tracer.repository.TaskRepository;
+import com.project.Task.tracer.repository.TaskSpecification;
 import com.project.Task.tracer.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +26,24 @@ public class TaskService {
     private final TaskMapper taskMapper;
 
     private final UserService userService;
+
+    public TaskListResponse getTasksByAuthorId(UUID authorId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return taskMapper.fromListToTaskListResponse(taskRepository.findAllByAuthor_Id(authorId, pageable));
+    }
+
+    public TaskListResponse getTasksByExecutorId(UUID executorId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return taskMapper.fromListToTaskListResponse(taskRepository.findAllByExecutor_Id(executorId, pageable));
+    }
+
+    public TaskListResponse getTasksWithFilter(TaskFilterRequest filterRequest, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Task> tasks = taskRepository.findAll(
+                TaskSpecification.findWithFilter(filterRequest), pageable
+        ).getContent();
+        return taskMapper.fromListToTaskListResponse(tasks);
+    }
 
     public TaskResponse getTask(UUID taskId) {
         return taskMapper.fromTaskToResponse(getTaskById(taskId));
