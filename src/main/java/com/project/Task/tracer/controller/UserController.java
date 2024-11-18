@@ -1,6 +1,6 @@
 package com.project.Task.tracer.controller;
 
-import com.project.Task.tracer.dto.user.UserRequest;
+import com.project.Task.tracer.dto.user.UpdateUserRequest;
 import com.project.Task.tracer.dto.user.UserResponse;
 import com.project.Task.tracer.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,12 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+        return ResponseEntity.ok(userService.getUserByIdResponse(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @RequestBody UserRequest userRequest) {
-        return ResponseEntity.ok(userService.updateUser(id, userRequest));
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")

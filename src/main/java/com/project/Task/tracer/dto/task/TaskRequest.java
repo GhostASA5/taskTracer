@@ -4,6 +4,8 @@ import com.project.Task.tracer.model.task.Priority;
 import com.project.Task.tracer.model.task.Status;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class TaskRequest {
 
@@ -15,8 +17,8 @@ public class TaskRequest {
 
     private Priority priority;
 
-    private String authorId;
+    private UUID authorId;
 
-    private String executedId;
+    private UUID executedId;
 
 }

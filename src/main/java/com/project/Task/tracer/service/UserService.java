@@ -1,5 +1,6 @@
 package com.project.Task.tracer.service;
 
+import com.project.Task.tracer.dto.user.UpdateUserRequest;
 import com.project.Task.tracer.dto.user.UserRequest;
 import com.project.Task.tracer.dto.user.UserResponse;
 import com.project.Task.tracer.exception.UserAlreadyExistException;
@@ -28,35 +29,29 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse getUserById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException(MessageFormat.format("User with {0} not found", id))
-        );
-        return userMapper.fromUserToResponse(user);
+    public UserResponse getUserByIdResponse(UUID id) {
+        return userMapper.fromUserToResponse(getUserById(id));
     }
 
     public UserResponse createUser(UserRequest request) {
         User newUser = userMapper.fromRequestToUser(request);
         checkUserData(newUser);
         Role role = Role.from(request.getRoleType());
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setRoles(Collections.singletonList(role));
         role.setUser(newUser);
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(newUser);
 
         return userMapper.fromUserToResponse(newUser);
     }
 
-    public UserResponse updateUser(UUID id, UserRequest request) {
+    public UserResponse updateUser(UUID id, UpdateUserRequest request) {
         User updateUser = userMapper.fromRequestToUser(request);
-        Optional<User> excitedUser = userRepository.findById(id);
+        User existedUser = getUserById(id);
 
-        if (excitedUser.isPresent()) {
-            checkUserData(updateUser);
-            BeanUtils.copyNonNullProperties(updateUser, excitedUser.get());
-            return userMapper.fromUserToResponse(userRepository.save(excitedUser.get()));
-        }
-        throw new UserNotFoundException(MessageFormat.format("User with {0} not found", id));
+        checkUserData(updateUser);
+        BeanUtils.copyNonNullProperties(updateUser, existedUser);
+        return userMapper.fromUserToResponse(userRepository.save(existedUser));
     }
 
     public void deleteUser(UUID id) {
@@ -71,6 +66,12 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new UserNotFoundException(MessageFormat.format("User with email {0} not found.", email))
+        );
+    }
+
+    public User getUserById(UUID id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException(MessageFormat.format("User with {0} not found", id))
         );
     }
 
