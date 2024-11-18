@@ -2,12 +2,14 @@ package com.project.Task.tracer.security;
 
 import com.project.Task.tracer.model.user.Role;
 import com.project.Task.tracer.model.user.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+@Getter
 @RequiredArgsConstructor
 public class AppUserPrincipal implements UserDetails {
 

@@ -4,6 +4,7 @@ import com.project.Task.tracer.dto.auth.AuthenticateRequest;
 import com.project.Task.tracer.dto.auth.AuthenticateResponse;
 import com.project.Task.tracer.dto.user.UserRequest;
 import com.project.Task.tracer.dto.user.UserResponse;
+import com.project.Task.tracer.security.AppUserPrincipal;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,8 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final JwtService jwtService;
+
     public AuthenticateResponse login(AuthenticateRequest request, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -29,17 +32,17 @@ public class AuthService {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-//        var jwt = jwtService.generateToken(user);
+        var jwt = jwtService.generateToken((AppUserPrincipal) userDetails);
 //        var refreshToken = refreshTokenService.generateRefreshTokenByUserId(user.getId());
 
         Cookie cookie = new Cookie("Refresh_token", "2");
-        Cookie cookie2 = new Cookie("Access_token", "2");
+        Cookie cookie2 = new Cookie("Access_token", jwt);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
         response.addCookie(cookie2);
-        response.addHeader("Authorization", "Bearer " + "jwt");
-        return new AuthenticateResponse("2", "2");
+        response.addHeader("Authorization", "Bearer " + jwt);
+        return new AuthenticateResponse(jwt, "2");
     }
 
     public void logout(HttpServletResponse response) {
