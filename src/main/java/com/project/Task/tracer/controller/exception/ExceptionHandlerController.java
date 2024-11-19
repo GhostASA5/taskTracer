@@ -1,10 +1,7 @@
 package com.project.Task.tracer.controller.exception;
 
 import com.project.Task.tracer.dto.error.ErrorResponse;
-import com.project.Task.tracer.exception.ForbiddenException;
-import com.project.Task.tracer.exception.TaskNotFoundException;
-import com.project.Task.tracer.exception.UserAlreadyExistException;
-import com.project.Task.tracer.exception.UserNotFoundException;
+import com.project.Task.tracer.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +33,12 @@ public class ExceptionHandlerController {
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<ErrorResponse> taskNotFound(TaskNotFoundException ex) {
         log.error("Error when trying to get a task. ", ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getLocalizedMessage()));
+    }
+
+    @ExceptionHandler(RefreshTokenException.class)
+    public ResponseEntity<ErrorResponse> refreshTokenException(RefreshTokenException ex) {
+        log.error("Error when trying to refresh token ", ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getLocalizedMessage()));
     }
 }

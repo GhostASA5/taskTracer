@@ -5,6 +5,7 @@ import com.project.Task.tracer.dto.auth.AuthenticateResponse;
 import com.project.Task.tracer.dto.user.UserRequest;
 import com.project.Task.tracer.dto.user.UserResponse;
 import com.project.Task.tracer.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,11 @@ public class AuthController {
     public ResponseEntity<AuthenticateResponse> login(@RequestBody AuthenticateRequest authenticateRequest,
                                                       HttpServletResponse response) {
         return ResponseEntity.ok(authService.login(authenticateRequest, response));
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<AuthenticateResponse> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(authService.refreshToken(request, response));
     }
 
     @PostMapping("/logout")
