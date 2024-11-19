@@ -1,5 +1,6 @@
 package com.project.Task.tracer.model.task;
 
+import com.project.Task.tracer.model.comment.Comment;
 import com.project.Task.tracer.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -45,4 +48,7 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "executor_id")
     private User executor;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 }

@@ -11,8 +11,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -56,4 +59,12 @@ public class AuthService {
         return userService.createUser(request);
     }
 
+    public static UUID getCurrentUserId() {
+        return UUID.fromString(
+                (String) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal()
+        );
+    }
 }

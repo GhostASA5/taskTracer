@@ -3,10 +3,12 @@ package com.project.Task.tracer.service;
 import com.project.Task.tracer.dto.user.UpdateUserRequest;
 import com.project.Task.tracer.dto.user.UserRequest;
 import com.project.Task.tracer.dto.user.UserResponse;
+import com.project.Task.tracer.exception.ForbiddenException;
 import com.project.Task.tracer.exception.UserAlreadyExistException;
 import com.project.Task.tracer.exception.UserNotFoundException;
 import com.project.Task.tracer.mapper.UserMapper;
 import com.project.Task.tracer.model.user.Role;
+import com.project.Task.tracer.model.user.RoleType;
 import com.project.Task.tracer.model.user.User;
 import com.project.Task.tracer.repository.UserRepository;
 import com.project.Task.tracer.utils.BeanUtils;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -46,21 +47,22 @@ public class UserService {
     }
 
     public UserResponse updateUser(UUID id, UpdateUserRequest request) {
+        User loggedUser = getUserById(AuthService.getCurrentUserId());
+        checkUserAuthority(loggedUser, id);
+
         User updateUser = userMapper.fromRequestToUser(request);
         User existedUser = getUserById(id);
-
         checkUserData(updateUser);
         BeanUtils.copyNonNullProperties(updateUser, existedUser);
         return userMapper.fromUserToResponse(userRepository.save(existedUser));
     }
 
     public void deleteUser(UUID id) {
-        Optional<User> excitedUser = userRepository.findById(id);
-        if (excitedUser.isPresent()) {
-            userRepository.deleteById(id);
-        } else {
-            throw new UserNotFoundException(MessageFormat.format("User with {0} not found", id));
-        }
+        User loggedUser = getUserById(AuthService.getCurrentUserId());
+        checkUserAuthority(loggedUser, id);
+
+        User user = getUserById(id);
+        userRepository.delete(user);
     }
 
     public User getUserByEmail(String email) {
@@ -82,6 +84,15 @@ public class UserService {
         } else if (userRepository.existsByEmail(newUser.getEmail())) {
             throw new UserAlreadyExistException(
                     MessageFormat.format("User with email {0} already exist.", newUser.getEmail()));
+        }
+    }
+
+    private void checkUserAuthority(User user, UUID targetId) {
+        if (!user.getRoles().get(0).getRole().equals(RoleType.ADMIN) && !user.getId().equals(targetId)) {
+            throw new ForbiddenException(MessageFormat.format(
+                    "The account {0} is not yours. You do not have the rights to change this account.",
+                    targetId
+            ));
         }
     }
 

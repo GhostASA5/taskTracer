@@ -51,9 +51,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        http.authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
+        http.authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

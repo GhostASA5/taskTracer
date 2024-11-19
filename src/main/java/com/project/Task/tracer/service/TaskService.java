@@ -1,9 +1,12 @@
 package com.project.Task.tracer.service;
 
 import com.project.Task.tracer.dto.task.*;
+import com.project.Task.tracer.exception.ForbiddenException;
 import com.project.Task.tracer.exception.TaskNotFoundException;
 import com.project.Task.tracer.mapper.TaskMapper;
+import com.project.Task.tracer.model.task.Status;
 import com.project.Task.tracer.model.task.Task;
+import com.project.Task.tracer.model.user.RoleType;
 import com.project.Task.tracer.model.user.User;
 import com.project.Task.tracer.repository.TaskRepository;
 import com.project.Task.tracer.repository.TaskSpecification;
@@ -74,19 +77,20 @@ public class TaskService {
         return taskMapper.fromTaskToResponse(taskRepository.save(existedTask));
     }
 
-    public TaskResponse updateTaskByUser(UUID taskId, UpdateTaskByUser taskRequest) {
+    public void updateStatus(UUID taskId, Status status) {
         Task updatedTask = getTaskById(taskId);
 
-        if (taskRequest.getStatus() != null) {
-            updatedTask.setStatus(taskRequest.getStatus());
+        UUID userId = AuthService.getCurrentUserId();
+        User user = userService.getUserById(userId);
+
+        if (!user.getRoles().get(0).getRole().equals(RoleType.ADMIN) && !updatedTask.getExecutor().getId().equals(userId)) {
+            throw new ForbiddenException(MessageFormat.format(
+                    "You don`t have the right to change a task status. You are not the executor of the task {0}.", updatedTask.getId()
+            ));
         }
-        if (taskRequest.getComment() != null) {
-            String existedComment = updatedTask.getComment();
-            String addComment = existedComment != null ? existedComment
-                    .concat(taskRequest.getComment()) : taskRequest.getComment();
-            updatedTask.setComment(addComment);
-        }
-        return taskMapper.fromTaskToResponse(taskRepository.save(updatedTask));
+
+        updatedTask.setStatus(status);
+        taskRepository.save(updatedTask);
     }
 
     public void deleteTask(UUID taskId) {
@@ -96,7 +100,7 @@ public class TaskService {
         throw new TaskNotFoundException(MessageFormat.format("Task with id {0} not found", taskId));
     }
 
-    private Task getTaskById(UUID taskId) {
+    public Task getTaskById(UUID taskId) {
         return taskRepository.findById(taskId).orElseThrow(
                 () -> new TaskNotFoundException(MessageFormat.format("Task with id {0} not found", taskId))
         );
