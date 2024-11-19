@@ -3,6 +3,7 @@ package com.project.Task.tracer.controller;
 import com.project.Task.tracer.dto.user.UpdateUserRequest;
 import com.project.Task.tracer.dto.user.UserResponse;
 import com.project.Task.tracer.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @RequestBody @Valid UpdateUserRequest request) {
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 

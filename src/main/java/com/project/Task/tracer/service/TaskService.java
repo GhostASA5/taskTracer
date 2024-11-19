@@ -12,6 +12,7 @@ import com.project.Task.tracer.repository.TaskRepository;
 import com.project.Task.tracer.repository.TaskSpecification;
 import com.project.Task.tracer.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TaskService {
 
     private final TaskRepository taskRepository;
@@ -31,16 +33,19 @@ public class TaskService {
     private final UserService userService;
 
     public TaskListResponse getTasksByAuthorId(UUID authorId, int page, int size) {
+        log.info("TaskService: call getTasksByAuthorId: authorId - {}, page - {}, size - {}", authorId, page, size);
         Pageable pageable = PageRequest.of(page, size);
         return taskMapper.fromListToTaskListResponse(taskRepository.findAllByAuthor_Id(authorId, pageable));
     }
 
     public TaskListResponse getTasksByExecutorId(UUID executorId, int page, int size) {
+        log.info("TaskService: call getTasksByExecutorId: executorId - {}, page - {}, size - {}", executorId, page, size);
         Pageable pageable = PageRequest.of(page, size);
         return taskMapper.fromListToTaskListResponse(taskRepository.findAllByExecutor_Id(executorId, pageable));
     }
 
     public TaskListResponse getTasksWithFilter(TaskFilterRequest filterRequest, int page, int size) {
+        log.info("TaskService: call getTasksWithFilter: filterRequest - {}, page - {}, size - {}", filterRequest, page, size);
         Pageable pageable = PageRequest.of(page, size);
         List<Task> tasks = taskRepository.findAll(
                 TaskSpecification.findWithFilter(filterRequest), pageable
@@ -49,10 +54,12 @@ public class TaskService {
     }
 
     public TaskResponse getTask(UUID taskId) {
+        log.info("TaskService: call getTask: taskId - {}", taskId);
         return taskMapper.fromTaskToResponse(getTaskById(taskId));
     }
 
     public TaskResponse createTask(TaskRequest taskRequest) {
+        log.info("TaskService: call createTask: taskRequest - {}", taskRequest);
         Task newTask = taskMapper.fromRequestToTask(taskRequest);
         User author = userService.getUserById(taskRequest.getAuthorId());
         User executor = userService.getUserById(taskRequest.getExecutedId());
@@ -62,6 +69,7 @@ public class TaskService {
     }
 
     public TaskResponse updateTask(UUID taskId, TaskRequest taskRequest) {
+        log.info("TaskService: call updateTask: taskId - {}", taskId);
         Task updatedTask = taskMapper.fromRequestToTask(taskRequest);
         Task existedTask = getTaskById(taskId);
 
@@ -78,6 +86,7 @@ public class TaskService {
     }
 
     public void updateStatus(UUID taskId, Status status) {
+        log.info("TaskService: call updateStatus: taskId - {}, status - {}", taskId, status);
         Task updatedTask = getTaskById(taskId);
 
         UUID userId = AuthService.getCurrentUserId();
@@ -94,6 +103,7 @@ public class TaskService {
     }
 
     public void deleteTask(UUID taskId) {
+        log.info("TaskService: call deleteTask: taskId - {}", taskId);
         if (taskRepository.existsById(taskId)) {
             taskRepository.deleteById(taskId);
         }

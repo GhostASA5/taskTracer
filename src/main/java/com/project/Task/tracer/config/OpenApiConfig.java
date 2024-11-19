@@ -18,7 +18,7 @@ public class OpenApiConfig {
         openAPI.setInfo(new Info()
                 .title("API Documentation")
                 .version("1.0.0")
-                .description("API documentation with JWT authentication")
+                .description("API documentation for task tracer.")
         );
         openAPI.addSecurityItem(new SecurityRequirement().addList("BearerAuth"));
         openAPI.components(new Components().addSecuritySchemes("BearerAuth",

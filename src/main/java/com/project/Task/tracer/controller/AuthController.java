@@ -7,6 +7,7 @@ import com.project.Task.tracer.dto.user.UserResponse;
 import com.project.Task.tracer.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticateResponse> login(@RequestBody AuthenticateRequest authenticateRequest,
+    public ResponseEntity<AuthenticateResponse> login(@RequestBody @Valid AuthenticateRequest authenticateRequest,
                                                       HttpServletResponse response) {
         return ResponseEntity.ok(authService.login(authenticateRequest, response));
     }
@@ -39,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerAccount(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> registerAccount(@RequestBody @Valid UserRequest userRequest) {
         return ResponseEntity.ok(authService.registerAccount(userRequest));
     }
 }

@@ -13,6 +13,7 @@ import com.project.Task.tracer.model.user.User;
 import com.project.Task.tracer.repository.UserRepository;
 import com.project.Task.tracer.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -31,10 +33,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResponse getUserByIdResponse(UUID id) {
+        log.info("UserService: call getUserByIdResponse: {}", id);
         return userMapper.fromUserToResponse(getUserById(id));
     }
 
     public UserResponse createUser(UserRequest request) {
+        log.info("UserService: call createUser");
         User newUser = userMapper.fromRequestToUser(request);
         checkUserData(newUser);
         Role role = Role.from(request.getRoleType());
@@ -47,6 +51,7 @@ public class UserService {
     }
 
     public UserResponse updateUser(UUID id, UpdateUserRequest request) {
+        log.info("UserService: call updateUser: {}", id);
         User loggedUser = getUserById(AuthService.getCurrentUserId());
         checkUserAuthority(loggedUser, id);
 
@@ -58,6 +63,7 @@ public class UserService {
     }
 
     public void deleteUser(UUID id) {
+        log.info("UserService: call deleteUser: {}", id);
         User loggedUser = getUserById(AuthService.getCurrentUserId());
         checkUserAuthority(loggedUser, id);
 

@@ -4,6 +4,7 @@ import com.project.Task.tracer.dto.comment.CommentListResponse;
 import com.project.Task.tracer.dto.comment.CommentRequest;
 import com.project.Task.tracer.dto.comment.CommentResponse;
 import com.project.Task.tracer.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class CommentController {
 
     @PostMapping("/{taskId}")
     public ResponseEntity<CommentResponse> createComment(@PathVariable("taskId") UUID taskId,
-                                                         @RequestBody CommentRequest commentRequest) {
+                                                         @RequestBody @Valid CommentRequest commentRequest) {
         return ResponseEntity.ok(commentService.addComment(taskId, commentRequest));
     }
 }

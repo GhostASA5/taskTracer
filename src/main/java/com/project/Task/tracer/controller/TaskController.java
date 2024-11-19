@@ -6,6 +6,7 @@ import com.project.Task.tracer.dto.task.TaskRequest;
 import com.project.Task.tracer.dto.task.TaskResponse;
 import com.project.Task.tracer.model.task.Status;
 import com.project.Task.tracer.service.TaskService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +38,7 @@ public class TaskController {
     @GetMapping("/filter")
     public ResponseEntity<TaskListResponse> getTasksByFilter(@RequestParam(name = "page", defaultValue = "0") int page,
                                                              @RequestParam(name = "size", defaultValue = "10") int size,
-                                                             @RequestBody TaskFilterRequest filterRequest) {
+                                                             @RequestBody @Valid TaskFilterRequest filterRequest) {
         return ResponseEntity.ok(taskService.getTasksWithFilter(filterRequest, page, size));
     }
 
@@ -49,13 +50,13 @@ public class TaskController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest taskRequest) {
+    public ResponseEntity<TaskResponse> createTask(@RequestBody @Valid TaskRequest taskRequest) {
         return ResponseEntity.ok(taskService.createTask(taskRequest));
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable("id") UUID id, @RequestBody TaskRequest taskRequest) {
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable("id") UUID id, @RequestBody @Valid TaskRequest taskRequest) {
         return ResponseEntity.ok(taskService.updateTask(id, taskRequest));
     }
 

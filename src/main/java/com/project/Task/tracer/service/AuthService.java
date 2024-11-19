@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserService userService;
@@ -31,6 +33,7 @@ public class AuthService {
     private final JwtService jwtService;
 
     public AuthenticateResponse login(AuthenticateRequest request, HttpServletResponse response) {
+        log.info("AuthService: call login: request - {}", request);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -50,6 +53,8 @@ public class AuthService {
     }
 
     public AuthenticateResponse refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        log.info("AuthService: call refreshToken");
+
         Cookie[] cookies = request.getCookies();
 
         for (Cookie cookie : cookies) {
@@ -74,6 +79,7 @@ public class AuthService {
     }
 
     public void logout(HttpServletResponse response) {
+        log.info("AuthService: call logout");
         Cookie cookie = new Cookie("Refresh_token", "");
         cookie.setMaxAge(0);
         cookie.setPath("/");
@@ -81,6 +87,7 @@ public class AuthService {
     }
 
     public UserResponse registerAccount(UserRequest request) {
+        log.info("AuthService: call registerAccount");
         return userService.createUser(request);
     }
 

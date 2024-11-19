@@ -11,6 +11,7 @@ import com.project.Task.tracer.model.user.RoleType;
 import com.project.Task.tracer.model.user.User;
 import com.project.Task.tracer.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -31,11 +33,13 @@ public class CommentService {
     private final UserService userService;
 
     public CommentListResponse getCommentsByTaskId(UUID taskId, int page, int size) {
+        log.info("CommentService: call getCommentsByTaskId: taskId - {}, page - {}, size - {}", taskId, page, size);
         Pageable pageable = PageRequest.of(page, size);
         return commentMapper.fromListToCommentListResponse(commentRepository.findAllByTaskId(taskId, pageable));
     }
 
     public CommentResponse addComment(UUID taskId, CommentRequest commentRequest) {
+        log.info("CommentService: call addComment: taskId - {}, request - {}", taskId, commentRequest);
         Task task = taskService.getTaskById(taskId);
         UUID userId = AuthService.getCurrentUserId();
         User user = userService.getUserById(userId);
