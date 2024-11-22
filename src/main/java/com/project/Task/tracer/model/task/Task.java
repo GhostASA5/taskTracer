@@ -3,10 +3,7 @@ package com.project.Task.tracer.model.task;
 import com.project.Task.tracer.model.comment.Comment;
 import com.project.Task.tracer.model.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Task {
 
     @Id
@@ -37,9 +35,6 @@ public class Task {
     @Column
     @Enumerated(value = EnumType.STRING)
     private Priority priority;
-
-    @Column
-    private String comment;
 
     @ManyToOne
     @JoinColumn(name = "author_id")

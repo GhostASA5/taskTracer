@@ -56,10 +56,9 @@ public class UserService {
         checkUserAuthority(loggedUser, id);
 
         User updateUser = userMapper.fromRequestToUser(request);
-        User existedUser = getUserById(id);
         checkUserData(updateUser);
-        BeanUtils.copyNonNullProperties(updateUser, existedUser);
-        return userMapper.fromUserToResponse(userRepository.save(existedUser));
+        BeanUtils.copyNonNullProperties(updateUser, loggedUser);
+        return userMapper.fromUserToResponse(userRepository.save(loggedUser));
     }
 
     public void deleteUser(UUID id) {

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: Task-tracer
+
+  jpa:
+    generate-ddl: false
+    open-in-view: true
+
+server:
+  port: 8088

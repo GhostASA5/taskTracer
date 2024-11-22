@@ -4,9 +4,11 @@ import com.project.Task.tracer.model.user.RoleType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 @Schema(description = "Создание пользователя")
 public class UserRequest {
 

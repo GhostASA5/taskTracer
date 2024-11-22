@@ -5,11 +5,13 @@ import com.project.Task.tracer.model.task.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.UUID;
 
 @Data
+@Builder
 @Schema(description = "Создание задачи")
 public class TaskRequest {
 
